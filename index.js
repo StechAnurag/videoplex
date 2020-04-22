@@ -7,6 +7,8 @@ const debugDB = require('debug')('app:db');
 const app = express();
 
 app.use(express.static('public'));
+app.set('view engine', 'pug');
+app.set('views', './views');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -21,10 +23,11 @@ if (app.get('env') === 'development') {
 }
 
 app.get('/', (req, res) => {
-  res.send('Welcome to videoplex');
+  res.render('index', { message: 'Videoplex' });
+  // res.send('Welcome to videoplex');
 });
 
-debugDB('Database debugging message');
+debugDB('Connected to Database..');
 
 const port = process.env.PORT || 7000;
 app.listen(port, () => console.log(`App is running at http://localhost:${port} 🚀`));
