@@ -1,0 +1,8 @@
+{
+  "name": "Videoplex - Prod",
+  "mail": {
+    "host": "sendgrid-serever",
+    "port": "someport",
+    "authentication": "some-value"
+  }
+}
