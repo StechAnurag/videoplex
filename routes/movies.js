@@ -4,8 +4,8 @@ const { Movie, validateMovie } = require('../models/movie');
 const { Genre } = require('../models/genre');
 
 router.get('/', async (req, res) => {
-  const movie = await Movie.find().sort('title');
-  res.json({ status: 'success', data: { movie } });
+  const movies = await Movie.find().sort('title');
+  res.json({ status: 'success', data: { movies } });
 });
 
 router.post('/', async (req, res) => {
