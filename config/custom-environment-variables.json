@@ -1,5 +1,3 @@
 {
-  "mail": {
-    "password": "MAIL_PASSWORD"
-  }
+  "jwtPrivateKey": "VIDEOPLEX_JWT_PRIVATE_KEY"
 }

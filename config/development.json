@@ -1,8 +1,3 @@
 {
-  "name": "Videoplex - Dev",
-  "mail": {
-    "host": "mailtrap-serever",
-    "port": "someport",
-    "authentication": "some-value"
-  }
+  "name": "Videoplex - Dev"
 }

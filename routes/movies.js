@@ -2,13 +2,14 @@ const express = require('express');
 const router = express.Router();
 const { Movie, validateMovie } = require('../models/movie');
 const { Genre } = require('../models/genre');
+const { authCheck, checkRole } = require('./../middlewares/auth');
 
 router.get('/', async (req, res) => {
   const movies = await Movie.find().sort('title');
   res.json({ status: 'success', data: { movies } });
 });
 
-router.post('/', async (req, res) => {
+router.post('/', [authCheck, checkRole], async (req, res) => {
   const { error } = validateMovie(req.body);
   if (error) return res.status(400).json({ status: 'fail', error: error.details[0].message });
   const { title, genreId, numberInStock, dailyRentalRate } = req.body;
@@ -33,7 +34,7 @@ router.get('/:id', async (req, res) => {
   res.json({ status: 'success', data: { movie } });
 });
 
-router.patch('/:id', async (req, res) => {
+router.patch('/:id', [authCheck, checkRole], async (req, res) => {
   const { error } = validateMovie(req.body);
   if (error) return res.status(400).json({ status: 'fail', error: error.details[0].message });
   const movie = await Movie.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -41,7 +42,7 @@ router.patch('/:id', async (req, res) => {
   res.json({ status: 'scuccess', data: { Movie } });
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', [authCheck, checkRole], async (req, res) => {
   const movie = await Movie.findByIdAndDelete(req.params.id);
   if (!movie) return res.status(404).json({ status: 'fail', message: 'Movie with id not found' });
   res.json({ status: 'success', data: { movie } });
