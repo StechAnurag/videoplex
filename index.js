@@ -24,6 +24,7 @@ if (app.get('env') === 'development') {
 app.use('/api/v1/genres', require('./routes/genres'));
 app.use('/api/v1/customers', require('./routes/customers'));
 app.use('/api/v1/movies', require('./routes/movies'));
+app.use('/api/v1/rentals', require('./routes/rentals'));
 
 app.get('/', (req, res) => {
   res.render('index', { message: 'Videoplex' });

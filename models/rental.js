@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Joi = require('@hapi/joi');
+Joi.objectId = require('joi-objectid')(Joi);
 
 const Rental = mongoose.model(
   'Rental',
@@ -41,10 +42,10 @@ const Rental = mongoose.model(
             type: Number,
             min: 0,
             maxlength: 500,
-            required: true
-          },
-          get: val => Math.round(val),
-          set: val => Math.round(val)
+            required: true,
+            get: val => Math.round(val),
+            set: val => Math.round(val)
+          }
         }),
         required: true
       },
@@ -71,8 +72,8 @@ const Rental = mongoose.model(
 
 function validateRental(rental) {
   const schema = Joi.object({
-    customerId: Joi.string().required(),
-    movieId: Joi.string().required()
+    customerId: Joi.objectId().required(),
+    movieId: Joi.objectId().required()
   });
   return schema.validate(rental);
 }

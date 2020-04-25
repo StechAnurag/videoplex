@@ -1,8 +1,13 @@
 const express = require('express');
+const mongoose = require('mongoose');
+const Fawn = require('fawn');
 const router = express.Router();
 const { Rental, validateRental } = require('../models/rental');
 const { Movie } = require('../models/movie');
 const { Customer } = require('../models/customer');
+
+// TRANSACTION IMPLEMENTATION
+Fawn.init(mongoose);
 
 router.get('/', async (req, res) => {
   const rentals = await Movie.find().sort('-dateOut');
@@ -24,29 +29,50 @@ router.post('/', async (req, res) => {
 
   let rental = new Rental({
     customer: {
-      _id: customer.id,
+      _id: customer._id,
       name: customer.name,
       phone: customer.phone
     },
     movie: {
-      _id: movie.id,
+      _id: movie._id,
       title: movie.title,
       dailyRentalRate: movie.dailyRentalRate
     }
   });
   // Implement Transaction
+  /* 
   //Ops1
   rental = await rental.save();
 
   //Ops2
   movie.numberInStock--;
-  await movie.save();
+  await movie.save(); 
+  */
+  try {
+    new Fawn.Task()
+      .save('rentals', rental)
+      .update(
+        'movies',
+        { _id: movie._id },
+        {
+          $inc: { numberInStock: -1 }
+        }
+      )
+      //.remove()
+      .run();
 
-  res.status(201).json({
-    status: 'success',
-    message: 'A new rental created',
-    data: { rental }
-  });
+    res.status(201).json({
+      status: 'success',
+      message: 'A new rental created',
+      data: { rental }
+    });
+  } catch (err) {
+    // log this error into a file
+    res.status(500).json({
+      status: 'error',
+      message: 'Something went wrong!'
+    });
+  }
 });
 
 router.get('/:id', async (req, res) => {
