@@ -6,14 +6,43 @@ const morgan = require('morgan');
 const mongoose = require('mongoose');
 const debug = require('debug')('app:normal');
 const errorHandler = require('./middlewares/error');
+const winston = require('winston');
+require('winston-mongodb');
 
 const app = express();
+
+// ERROR Handling: outside the express
+/* process.on('uncaughtException', err => { // handling errors in synchronous code
+  console.log('UNCAUGHT EXCEPTION💥');
+  winston.error(err.message, err);
+  process.exit(1);
+}); */
+// configuring a different transport for synchronous error
+
+winston.handleExceptions(new winston.transports.File({ filename: 'uncaughtException.log' }));
+
+process.on('unhandledRejection', err => {
+  // handling errors in asynchronous code
+  throw err; // winston will catch this exception, so we can rely on it rather than commented implementation
+});
+/* process.on('unhandledRejection', err => {
+  // handling errors in asynchronous code
+  console.log('UNHANDLED REJECTION💥');
+  winston.error(err.message, err);
+  process.exit(1);
+}); */
 
 // check for environment variables
 if (dotenv.error || !config.get('jwtPrivateKey')) {
   debug('💥ERROR: setting environment variables');
   process.exit(1);
 }
+
+//configuring the winston logger
+winston.add(winston.transports.File, { filename: 'logfile.log' });
+winston.add(winston.transports.MongoDB, { db: 'mongodb://localhost/videoplex', level: 'error' });
+// only log error level errors to the database. warn , info and below that not be stored
+winston.remove(winston.transports.Console);
 
 // SETTING VIEWS
 app.use(express.static('public'));
@@ -41,8 +70,14 @@ app.get('/', (req, res) => {
   res.render('index', { message: 'Videoplex' });
 });
 
-// Error handling
+// Error handling in Express
 app.use(errorHandler);
+
+// simulating an uncaughtExeption
+//throw new Error('Somthing failed during app startup');
+// simulating an unhandledRejection
+/* const p = Promise.reject(new Error('Something failed miserably'));
+p.then(()=>console.log('Done')); */
 
 // CONNECT DB
 mongoose
