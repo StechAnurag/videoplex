@@ -2,10 +2,18 @@ const express = require('express');
 const router = express.Router();
 const { Genre, validateGenre } = require('../models/genre');
 const { authCheck, checkRole } = require('./../middlewares/auth');
+// const asyncMiddleware = require('./../middlewares/async');
 
+/* router.get(
+  '/',
+  asyncMiddleware(async (req, res) => {
+    const genres = await Genre.find().sort('name');
+    res.json({ status: 'success', data: { genres } });
+  })
+); */
 router.get('/', async (req, res) => {
   const genres = await Genre.find().sort('name');
-  res.send(genres);
+  res.json({ status: 'success', data: { genres } });
 });
 
 router.post('/', authCheck, checkRole, async (req, res) => {

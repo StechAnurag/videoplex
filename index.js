@@ -1,9 +1,11 @@
 const dotenv = require('dotenv').config({ path: '.env' });
+require('express-async-errors'); // handle async error without try catch in express
 const config = require('config');
 const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const debug = require('debug')('app:normal');
+const errorHandler = require('./middlewares/error');
 
 const app = express();
 
@@ -38,6 +40,9 @@ app.use('/api/v1/auth', require('./routes/auth'));
 app.get('/', (req, res) => {
   res.render('index', { message: 'Videoplex' });
 });
+
+// Error handling
+app.use(errorHandler);
 
 // CONNECT DB
 mongoose
