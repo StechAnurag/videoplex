@@ -10,10 +10,5 @@ require('./startup/config')(dotenv); // configuration and env vars
 require('./startup/routes')(app); // route handlers
 require('./startup/db')(); // db connection
 
-// SETTING VIEWS
-app.use(express.static('public'));
-app.set('view engine', 'pug');
-app.set('views', './views');
-
 const port = process.env.PORT || 7000;
 app.listen(port, () => winston.info(`App is running at http://localhost:${port} 🚀`));
