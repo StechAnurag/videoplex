@@ -11,4 +11,8 @@ require('./startup/routes')(app); // route handlers
 require('./startup/db')(); // db connection
 
 const port = process.env.PORT || 7000;
-app.listen(port, () => winston.info(`App is running at http://localhost:${port} 🚀`));
+const server = app.listen(port, () =>
+  winston.info(`App is running at http://localhost:${port} 🚀`)
+);
+
+module.exports = server;

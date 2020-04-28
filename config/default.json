@@ -1,4 +1,5 @@
 {
   "name": "videoplex app",
-  "jwtPrivateKey": ""
+  "jwtPrivateKey": "",
+  "db": "mongodb://localhost/videoplex"
 }

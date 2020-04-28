@@ -5,6 +5,7 @@ const router = express.Router();
 const { Rental, validateRental } = require('../models/rental');
 const { Movie } = require('../models/movie');
 const { Customer } = require('../models/customer');
+const validateObjectId = require('./../middlewares/validateObjectId');
 
 // TRANSACTION IMPLEMENTATION
 Fawn.init(mongoose);
@@ -75,13 +76,13 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', validateObjectId, async (req, res) => {
   const rental = await Rental.findById(req.params.id);
   if (!rental) return res.status(404).json({ status: 'fail', message: 'Rental with id not found' });
   res.json({ status: 'success', data: { rental } });
 });
 
-router.patch('/:id', async (req, res) => {
+router.patch('/:id', validateObjectId, async (req, res) => {
   const { error } = validateRental(req.body);
   if (error) return res.status(400).json({ status: 'fail', error: error.details[0].message });
   const rental = await Rental.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -89,7 +90,7 @@ router.patch('/:id', async (req, res) => {
   res.json({ status: 'scuccess', data: { rental } });
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', validateObjectId, async (req, res) => {
   const rental = await Rental.findByIdAndDelete(req.params.id);
   if (!rental) return res.status(404).json({ status: 'fail', message: 'Rental with id not found' });
   res.json({ status: 'success', data: { rental } });

@@ -2,21 +2,14 @@ const express = require('express');
 const router = express.Router();
 const { Genre, validateGenre } = require('../models/genre');
 const { authCheck, checkRole } = require('./../middlewares/auth');
-// const asyncMiddleware = require('./../middlewares/async');
+const validateObjectId = require('./../middlewares/validateObjectId');
 
-/* router.get(
-  '/',
-  asyncMiddleware(async (req, res) => {
-    const genres = await Genre.find().sort('name');
-    res.json({ status: 'success', data: { genres } });
-  })
-); */
 router.get('/', async (req, res) => {
   const genres = await Genre.find().sort('name');
   res.json({ status: 'success', data: { genres } });
 });
 
-router.post('/', authCheck, checkRole, async (req, res) => {
+router.post('/', authCheck, async (req, res) => {
   const { error } = validateGenre(req.body);
   if (error) return res.status(400).json({ status: 'fail', error: error.details[0].message });
   const genre = await Genre.create({ name: req.body.name });
@@ -27,13 +20,13 @@ router.post('/', authCheck, checkRole, async (req, res) => {
   });
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', validateObjectId, async (req, res) => {
   const genre = await Genre.findById(req.params.id);
   if (!genre) return res.status(404).json({ status: 'fail', message: 'Genre with id not found' });
   res.json({ status: 'success', data: { genre } });
 });
 
-router.patch('/:id', authCheck, checkRole, async (req, res) => {
+router.patch('/:id', validateObjectId, authCheck, checkRole, async (req, res) => {
   const { error } = validateGenre(req.body);
   if (error) return res.status(400).json({ status: 'fail', error: error.details[0].message });
   const genre = await Genre.findByIdAndUpdate(
@@ -45,7 +38,7 @@ router.patch('/:id', authCheck, checkRole, async (req, res) => {
   res.json({ status: 'scuccess', data: { genre } });
 });
 
-router.delete('/:id', authCheck, checkRole, async (req, res) => {
+router.delete('/:id', validateObjectId, authCheck, checkRole, async (req, res) => {
   const genre = await Genre.findByIdAndDelete(req.params.id);
   if (!genre) return res.status(404).json({ status: 'fail', message: 'Genre with id not found' });
   res.json({ status: 'success', data: { genre } });

@@ -1,0 +1,4 @@
+{
+  "db": "mongodb://localhost/videoplex_tests",
+  "jwtPrivateKey": "1234"
+}

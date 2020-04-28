@@ -9,13 +9,13 @@ async function authCheck(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, config.get('jwtPrivateKey'));
-    const user = await User.findById(decoded.id);
-    if (!user) {
-      return res
-        .status(401)
-        .json({ status: 'fail', message: 'User belonging to the token, does not exist' });
-    }
-    req.user = user;
+    // const user = await User.findById(decoded.id);
+    // if (!user) {
+    //   return res
+    //     .status(401)
+    //     .json({ status: 'fail', message: 'User belonging to the token, does not exist' });
+    // }
+    req.user = decoded.id;
     next();
   } catch (ex) {
     res.status(400).json({ status: 'fail', message: 'Invalid AuthToken' });
