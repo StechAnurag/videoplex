@@ -43,55 +43,80 @@ describe('/api/v1/genres', () => {
   });
 
   describe('POST /', () => {
+    /**
+     * Define the Happy Path, and then in each test, we change
+     * one parameter that clearly aigns with the name of the test
+     * */
+
+    let token;
+    let name;
+
+    const exec = async () => {
+      return await request(server).post('/api/v1/genres').set('x-auth-token', token).send({ name });
+    };
+
+    beforeEach(() => {
+      token = new User().generateToken();
+      name = 'genre1';
+    });
+
     it('should return a 401 if client is not logged in', async () => {
-      const res = await request(server).post('/api/v1/genres').send({ name: 'genre1' });
+      // const res = await request(server).post('/api/v1/genres').send({ name: 'genre1' });
+      token = '';
+      const res = await exec();
       expect(res.status).toBe(401);
     });
 
     it('should return a 400 if genre is less than 3 characters', async () => {
-      const token = new User().generateToken();
+      // const token = new User().generateToken();
 
-      const res = await request(server)
-        .post('/api/v1/genres')
-        .set('x-auth-token', token)
-        .send({ name: 'ab' });
+      // const res = await request(server)
+      //   .post('/api/v1/genres')
+      //   .set('x-auth-token', token)
+      //   .send({ name: 'ab' });
 
+      name = 'ab';
+      const res = await exec();
       expect(res.status).toBe(400);
     });
 
     it('should return a 400 if genre is more than 40 characters', async () => {
-      const token = new User().generateToken();
+      // const token = new User().generateToken();
+      // const name = new Array(50).fill('a').join();
+      // const res = await request(server)
+      //   .post('/api/v1/genres')
+      //   .set('x-auth-token', token)
+      //   .send({ name });
 
-      const name = new Array(50).fill('a').join();
-      const res = await request(server)
-        .post('/api/v1/genres')
-        .set('x-auth-token', token)
-        .send({ name });
+      name = new Array(50).fill('a').join();
+      const res = await exec();
 
       expect(res.status).toBe(400);
     });
 
     it('should save the genre if it is valid', async () => {
-      const token = new User().generateToken();
+      // const token = new User().generateToken();
+      // const name = 'Happy';
+      // const res = await request(server)
+      //   .post('/api/v1/genres')
+      //   .set('x-auth-token', token)
+      //   .send({ name });
 
-      const name = 'Happy';
-      const res = await request(server)
-        .post('/api/v1/genres')
-        .set('x-auth-token', token)
-        .send({ name });
-
+      await exec();
       const genre = await Genre.find({ name });
       expect(genre).not.toBeNull();
     });
 
     it('should retrun the genre if it is valid', async () => {
-      const token = new User().generateToken();
+      // const token = new User().generateToken();
 
-      const name = 'Happy';
-      const res = await request(server)
-        .post('/api/v1/genres')
-        .set('x-auth-token', token)
-        .send({ name });
+      // const name = 'Happy';
+      // const res = await request(server)
+      //   .post('/api/v1/genres')
+      //   .set('x-auth-token', token)
+      //   .send({ name });
+
+      const res = await exec();
 
       expect(res.body.data.genre).toHaveProperty('_id');
       expect(res.body.data.genre).toHaveProperty('name', name);
